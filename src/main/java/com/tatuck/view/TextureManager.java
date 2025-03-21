@@ -1,32 +1,48 @@
 package com.tatuck.view;
 
-import java.io.InputStream;
-import java.util.HashMap;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import javax.imageio.ImageIO;
+import java.io.InputStream;
 
 public class TextureManager {
-    private static HashMap<Integer, BufferedImage> textures = new HashMap<Integer, BufferedImage>();
+    private static TextureManager instance = null;
+    private HashMap<Integer, BufferedImage> textures;
 
-    public TextureManager(){
-        loadTexture(0, "resources/tiles/grass.png");
+    // Singleton pattern
+    private TextureManager() {
+        textures = new HashMap<>();
     }
 
-    private void loadTexture(int ID, String imagePath){
-        try{
-            InputStream inputStream = TextureManager.class.getClassLoader().getResourceAsStream(imagePath);
-            if (inputStream != null){
-                textures.put(ID, ImageIO.read(inputStream));
-            }else{
-                System.err.println("Imagen \"" + imagePath + "\" no accesible");
-            }
-        } catch(Exception e){
-            e.printStackTrace();
+    public static TextureManager getInstance() {
+        if (instance == null) {
+            instance = new TextureManager();
+        }
+        return instance;
+    }
+
+    public void loadTexture(int ID, String path) {
+        BufferedImage image = loadImage(path);
+        if (image != null) {
+            textures.put(ID, image);
         }
     }
 
-    public static BufferedImage getImage(int ID){
+    public BufferedImage getTexture(int ID) {
         return textures.get(ID);
+    }
+
+    private BufferedImage loadImage(String path) {
+        try {
+            InputStream inputStream = TextureManager.class.getClassLoader().getResourceAsStream(path);
+            if (inputStream != null) {
+                return ImageIO.read(inputStream);
+            } else {
+                System.err.println("Image not found: " + path);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

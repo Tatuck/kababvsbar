@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class TileManager {
     private static HashMap<Integer, TileProperties> tiles = new HashMap<Integer, TileProperties>();
 
-    public void createTile(int ID, boolean walkable, float speedMultiplier){
+    public static void createTile(int ID, boolean walkable, float speedMultiplier){
         tiles.put(ID, new TileProperties(ID, walkable, speedMultiplier));
     }
 

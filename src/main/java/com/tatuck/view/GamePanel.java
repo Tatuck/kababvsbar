@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
+import java.util.HashSet;
+
 import javax.swing.Timer;
 
 import com.tatuck.models.Player;
@@ -20,16 +22,31 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     public static final int SCREEN_HEIGHT = 480;
 
     private int cameraX, cameraY;
-    private ArrayList<Integer> pressedKeys;
+    private HashSet<Integer> pressedKeys;
     private Map map;
     private final Timer timer;
+    private TextureManager tm;
 
     public GamePanel(){
-        new TextureManager();
+        tm = TextureManager.getInstance();
+
+        // Create tiles
+        tm.loadTexture(0, "resources/tiles/grass.png");
+        TileManager.createTile(0, true, 3);
+
+
+        // Set up sprites
+        tm.loadTexture(200, "resources/sprites/player/up.png");
+        tm.loadTexture(201, "resources/sprites/player/down.png");
+        tm.loadTexture(202, "resources/sprites/player/right.png");
+        tm.loadTexture(203, "resources/sprites/player/left.png");
+        
+        PlayeableTexture playerTexture = new PlayeableTexture(200, 201, 202, 203);
         this.map = new Map("resources/map.txt");
-        this.player = new Player(40, 40, this.map);
-        this.pressedKeys = new ArrayList<>();
+        this.player = new Player(2, 0, this.map, playerTexture);
+        this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
+        this.setFocusable(true);
 
         // Start timer
         timer = new Timer(16, this); // 60 FPS
@@ -50,8 +67,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         for(Tile tile : map){
             int screenX = tile.posX * Tile.TILE_SIZE - cameraX;
             int screenY = tile.posY * Tile.TILE_SIZE - cameraY;
-            g2d.drawImage(TextureManager.getImage(tile.tileId), screenX, screenY, Tile.TILE_SIZE, Tile.TILE_SIZE, null);
+            g2d.drawImage(tm.getTexture(tile.tileId), screenX, screenY, Tile.TILE_SIZE, Tile.TILE_SIZE, null);
         }
+
+        BufferedImage playerTexture = player.playeableTexture.getCurrentTexture();
+        
+        g2d.drawImage(playerTexture, player.x, player.y, playerTexture.getWidth(), playerTexture.getHeight(), null);
     }
 
     @Override
@@ -61,7 +82,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e){
-        pressedKeys.remove(e.getKeyCode());
+        pressedKeys.remove(Integer.valueOf(e.getKeyCode()));
     }
 
     @Override

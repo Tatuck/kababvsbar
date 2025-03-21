@@ -54,6 +54,7 @@ public class Map implements Iterable<Tile>{
     }
 
     public Tile getTileAtScreenCoord(int x, int y){
+        if (x < 0 || y < 0) return null;
         int tileX = x / TILE_SIZE;
         int tileY = y / TILE_SIZE;
         return getTileAtCoord(tileX, tileY);
@@ -61,9 +62,9 @@ public class Map implements Iterable<Tile>{
 
     public Tile getTileAtCoord(int x, int y){
         if (x >= 0 && x < width && y >= 0 && y < height) {
-            return tileMap[x][y];
+            return tileMap[y][x];
         }
-        throw new IndexOutOfBoundsException("Tile position out of map bounds.");
+        return null;
     }
 
     @Override
