@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import javax.swing.Timer;
 
 import com.tatuck.models.Player;
 import com.tatuck.controller.Map;
@@ -21,11 +22,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private int cameraX, cameraY;
     private ArrayList<Integer> pressedKeys;
     private Map map;
+    private final Timer timer;
 
     public GamePanel(){
         new TextureManager();
         this.map = new Map("resources/map.txt");
         this.player = new Player(40, 40, this.map);
+        this.pressedKeys = new ArrayList<>();
+        this.addKeyListener(this);
+
+        // Start timer
+        timer = new Timer(16, this); // 60 FPS
+        timer.start();
     }
 
     @Override
@@ -40,7 +48,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         cameraY = Math.max(0, Math.min(cameraY, Tile.TILE_SIZE - SCREEN_HEIGHT));
 
         for(Tile tile : map){
-            System.out.println(tile);
             int screenX = tile.posX * Tile.TILE_SIZE - cameraX;
             int screenY = tile.posY * Tile.TILE_SIZE - cameraY;
             g2d.drawImage(TextureManager.getImage(tile.tileId), screenX, screenY, Tile.TILE_SIZE, Tile.TILE_SIZE, null);
@@ -63,6 +70,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     @Override
     public void actionPerformed(ActionEvent e){
         handleInput();
+        repaint();
     }
 
     private void handleInput(){

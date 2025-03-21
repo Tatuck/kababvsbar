@@ -33,7 +33,7 @@ public class Map implements Iterable<Tile>{
                 height++;
             }
 
-            tileMap = new Tile[width][height];
+            this.tileMap = new Tile[height][width];
 
             scanner = new Scanner(Map.class.getClassLoader().getResourceAsStream(mapFilePath));
 
@@ -43,7 +43,7 @@ public class Map implements Iterable<Tile>{
                 String[] tileIds = line.split(",");
                 for (int col = 0; col < tileIds.length; col++) {
                     int tileId = Integer.parseInt(tileIds[col]);
-                    tileMap[col][row] = new Tile(tileId, row, col);
+                    tileMap[row][col] = new Tile(tileId, col, row);
                 }
                 row++;
             }
@@ -82,7 +82,7 @@ public class Map implements Iterable<Tile>{
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                Tile tile = tileMap[currentCol][currentRow];
+                Tile tile = tileMap[currentRow][currentCol];
                 currentCol++;
                 if (currentCol >= width) {
                     currentCol = 0;
