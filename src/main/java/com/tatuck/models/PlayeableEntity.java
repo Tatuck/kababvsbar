@@ -3,7 +3,6 @@ package com.tatuck.models;
 import java.awt.image.BufferedImage;
 
 import com.tatuck.controller.Map;
-import com.tatuck.view.Tile;
 import com.tatuck.view.PlayeableTexture;
 
 public class PlayeableEntity extends Entity{

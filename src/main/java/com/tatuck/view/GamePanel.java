@@ -28,6 +28,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private final Timer timer;
     private TextureManager tm;
 
+    private double lastProjectileShot;
+
     public GamePanel(){
         tm = TextureManager.getInstance();
 
@@ -54,6 +56,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
         this.setFocusable(true);
+
+        this.lastProjectileShot = 0.0;
 
         // Start timer
         timer = new Timer(16, this); // 60 FPS
@@ -120,6 +124,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
             projectile.move();
             projectile.checkDeath();
         }
+        this.lastProjectileShot = Math.max(0, this.lastProjectileShot - 0.1);
     }
 
     private void handleInput(){
@@ -128,7 +133,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         else if(pressedKeys.contains(KeyEvent.VK_DOWN)) player.move(-1, 0);
         else if(pressedKeys.contains(KeyEvent.VK_LEFT)) player.move(0, -1);
 
-        if (pressedKeys.contains(KeyEvent.VK_SPACE)) player.shoot();
+        if (pressedKeys.contains(KeyEvent.VK_SPACE) && this.lastProjectileShot == 0.0){
+            player.shoot();
+            this.lastProjectileShot = 1.0;
+        }
     }
 
 }
