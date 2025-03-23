@@ -1,5 +1,6 @@
 package com.tatuck.view;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 public class TextureManager {
     private static TextureManager instance = null;
     private HashMap<Integer, BufferedImage> textures;
+    static protected int ITEM_SIZE = 32;
 
     // Singleton pattern
     private TextureManager() {

@@ -2,6 +2,10 @@ package com.tatuck.view;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+
 import javax.swing.JPanel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -19,8 +23,8 @@ import com.tatuck.controller.Map;
 public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private final Player player1, player2;
 
-    public static final int SCREEN_WIDTH = 640;
-    public static final int SCREEN_HEIGHT = 480;
+    public static final int SCREEN_WIDTH = 1020;//640;
+    public static final int SCREEN_HEIGHT = 700; //480;
 
     private int cameraX, cameraY;
     private HashSet<Integer> pressedKeys;
@@ -57,8 +61,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         PlayeableTexture player1Texture = new PlayeableTexture(200, 201, 202, 203);
         PlayeableTexture player2Texture = new PlayeableTexture(204, 205, 206, 207);
         this.map = new Map("resources/map.txt");
-        this.player1 = new Player(2, 0, this.map, player1Texture);
-        this.player2 = new Player(25, 0, this.map, player2Texture);
+        this.player1 = new Player("Jugador 1", 2, 0, this.map, player1Texture);
+        this.player2 = new Player("Jugador 2", 25, 0, this.map, player2Texture);
         this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
         this.setFocusable(true);
@@ -72,9 +76,22 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics g2d = (Graphics2D) g;
-        // Center camera on player
-        cameraX = player1.x - SCREEN_WIDTH / 2;
-        cameraY = player1.y - SCREEN_HEIGHT / 2;
+        Player winner;
+        if ((winner = this.getWinner()) != null){
+            Font font = new Font("Arial", Font.BOLD, 100);
+            g2d.setFont(font);
+            g2d.drawString("GANADOR:", SCREEN_WIDTH/4 - 20, SCREEN_HEIGHT/2 - 60);
+            String winnerString = winner + "!";
+            FontMetrics fontMetrics = g2d.getFontMetrics(font);
+            int textPosX = (SCREEN_WIDTH - fontMetrics.stringWidth(winnerString))/2;
+            int textPosY = (SCREEN_HEIGHT - fontMetrics.getAscent()) / 2 + fontMetrics.getAscent();
+            g2d.drawString(winnerString, textPosX, textPosY);
+            this.timer.stop();
+            return;
+        }
+        // Center camera on average of both players
+        cameraX = ((player1.x + player2.x)/2) - SCREEN_WIDTH / 2;
+        cameraY = ((player1.y + player2.y)/2)  - SCREEN_HEIGHT / 2;
         // Check if camera is outside world limits
         cameraX = Math.max(0, Math.min(cameraX, map.getWidth() * Tile.TILE_SIZE - SCREEN_WIDTH));
         cameraY = Math.max(0, Math.min(cameraY, map.getHeight() * Tile.TILE_SIZE - SCREEN_HEIGHT));
@@ -98,8 +115,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
             BufferedImage projectileTexture = projectile.getCurrentTexture();
             int screenX = projectile.x - cameraX;
             int screenY = projectile.y - cameraY;
-            g2d.drawImage(projectileTexture, screenX, screenY, 32, 32, null);
+            g2d.drawImage(projectileTexture, screenX, screenY, projectile.getCurrentTexture().getWidth(), projectile.getCurrentTexture().getHeight(), null);
         }
+
+        // Draw health bars
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(new Font("Arial", Font.BOLD, 30));
+        g2d.drawString("JUGADOR 1: " + player1.getHealth(), 20, SCREEN_HEIGHT-50);
+        g2d.drawString("JUGADOR 2: " + player2.getHealth(), SCREEN_WIDTH-280, SCREEN_HEIGHT-50);
     }
 
     @Override
@@ -127,6 +150,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         for (Projectile projectile : projectiles){
             projectile.move();
             projectile.checkDeath();
+            if(projectile.checkCollision(player1)) player1.takeDamage(projectile.getDamage());
+            if(projectile.checkCollision(player2)) player2.takeDamage(projectile.getDamage());
         }
     }
 
@@ -150,6 +175,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         if (pressedKeys.contains(KeyEvent.VK_K)){
             player2.shoot();
         }
+    }
+
+    private Player getWinner(){
+        if(this.player1.getHealth() == 0){
+            return this.player2;
+        } else if (this.player2.getHealth() == 0){
+            return this.player1;
+        }
+        return null;
     }
 
 }

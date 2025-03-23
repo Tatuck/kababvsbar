@@ -43,4 +43,13 @@ public class Entity {
             this.y = newY;
         }
     }
+
+    public boolean intersectsWith(Entity otherEntity){
+        if (otherEntity.getCurrentTexture() == null) return false;
+        int otherEntityLeft = otherEntity.x;
+        int otherEntityRight = otherEntity.x + otherEntity.getCurrentTexture().getWidth();
+        int otherEntityTop = otherEntity.y;
+        int otherEntityBottom = otherEntity.y + otherEntity.getCurrentTexture().getHeight();
+        return this.x < otherEntityRight && this.x + this.getCurrentTexture().getWidth() > otherEntityLeft && this.y < otherEntityBottom && this.y + this.getCurrentTexture().getHeight() > otherEntityTop;
+    }
 }

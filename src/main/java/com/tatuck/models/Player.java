@@ -9,9 +9,13 @@ import com.tatuck.view.PlayeableTexture.Direction;
 
 public class Player extends PlayeableEntity{
     LocalTime lastShot;
-    public Player(int x, int y, Map map, PlayeableTexture playeableTexture){
+    private int health;
+    private String name;
+    public Player(String name, int x, int y, Map map, PlayeableTexture playeableTexture){
         super(x, y, map, playeableTexture);
         lastShot = LocalTime.now().minusSeconds(5);
+        this.health = 100;
+        this.name = name;
     }
 
     public void shoot(){
@@ -19,7 +23,20 @@ public class Player extends PlayeableEntity{
         if (now.minusNanos(250000000).compareTo(lastShot) < 0) return;
         lastShot = now;
         Direction currentDirection = this.playeableTexture.getDirection();
-        Projectile projectile = new Projectile(x, y, map, TextureManager.getInstance().getTexture(300), currentDirection);
+        Projectile projectile = new Projectile(x, y, map, TextureManager.getInstance().getTexture(300), currentDirection, this);
         this.map.addProjectile(projectile);
+    }
+
+    public int getHealth(){
+        return this.health;
+    }
+
+    public void takeDamage(int damage){
+        this.health = Math.max(0, this.health - damage);
+    }
+
+    @Override
+    public String toString(){
+        return this.name;
     }
 }
