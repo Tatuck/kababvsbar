@@ -17,7 +17,7 @@ import com.tatuck.models.Projectile;
 import com.tatuck.controller.Map;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener{
-    private final Player player;
+    private final Player player1, player2;
 
     public static final int SCREEN_WIDTH = 640;
     public static final int SCREEN_HEIGHT = 480;
@@ -28,7 +28,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private final Timer timer;
     private TextureManager tm;
 
-    private double lastProjectileShot;
 
     public GamePanel(){
         tm = TextureManager.getInstance();
@@ -42,22 +41,27 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 
 
         // Set up sprites
-        tm.loadTexture(200, "resources/sprites/player/up.png");
-        tm.loadTexture(201, "resources/sprites/player/down.png");
-        tm.loadTexture(202, "resources/sprites/player/right.png");
-        tm.loadTexture(203, "resources/sprites/player/left.png");
+        tm.loadTexture(200, "resources/sprites/player1/up.png");
+        tm.loadTexture(201, "resources/sprites/player1/down.png");
+        tm.loadTexture(202, "resources/sprites/player1/right.png");
+        tm.loadTexture(203, "resources/sprites/player1/left.png");
+
+        tm.loadTexture(204, "resources/sprites/player2/up.png");
+        tm.loadTexture(205, "resources/sprites/player2/down.png");
+        tm.loadTexture(206, "resources/sprites/player2/right.png");
+        tm.loadTexture(207, "resources/sprites/player2/left.png");
 
         // Set up items
         tm.loadTexture(300, "resources/items/kebab.png");
         
-        PlayeableTexture playerTexture = new PlayeableTexture(200, 201, 202, 203);
+        PlayeableTexture player1Texture = new PlayeableTexture(200, 201, 202, 203);
+        PlayeableTexture player2Texture = new PlayeableTexture(204, 205, 206, 207);
         this.map = new Map("resources/map.txt");
-        this.player = new Player(2, 0, this.map, playerTexture);
+        this.player1 = new Player(2, 0, this.map, player1Texture);
+        this.player2 = new Player(25, 0, this.map, player2Texture);
         this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
         this.setFocusable(true);
-
-        this.lastProjectileShot = 0.0;
 
         // Start timer
         timer = new Timer(16, this); // 60 FPS
@@ -69,8 +73,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         super.paintComponent(g);
         Graphics g2d = (Graphics2D) g;
         // Center camera on player
-        cameraX = player.x - SCREEN_WIDTH / 2;
-        cameraY = player.y - SCREEN_HEIGHT / 2;
+        cameraX = player1.x - SCREEN_WIDTH / 2;
+        cameraY = player1.y - SCREEN_HEIGHT / 2;
         // Check if camera is outside world limits
         cameraX = Math.max(0, Math.min(cameraX, map.getWidth() * Tile.TILE_SIZE - SCREEN_WIDTH));
         cameraY = Math.max(0, Math.min(cameraY, map.getHeight() * Tile.TILE_SIZE - SCREEN_HEIGHT));
@@ -82,12 +86,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
             g2d.drawImage(tm.getTexture(tile.tileId), screenX, screenY, Tile.TILE_SIZE, Tile.TILE_SIZE, null);
         }
 
-        // Paint player
-        BufferedImage playerTexture = player.playeableTexture.getCurrentTexture();
+        // Paint players
+        BufferedImage player1Texture = player1.playeableTexture.getCurrentTexture();
+        BufferedImage player2Texture = player2.playeableTexture.getCurrentTexture();
         
-        int playerPosX = player.x - cameraX;
-        int playerPosY = player.y - cameraY;
-        g2d.drawImage(playerTexture, playerPosX, playerPosY, playerTexture.getWidth(), playerTexture.getHeight(), null);
+        g2d.drawImage(player1Texture, player1.x - cameraX, player1.y - cameraY, player1Texture.getWidth(), player1Texture.getHeight(), null);
+        g2d.drawImage(player2Texture, player2.x - cameraX, player2.y - cameraY, player2Texture.getWidth(), player2Texture.getHeight(), null);
 
         // Paint projectiles
         for (Projectile projectile : this.map.getProjectiles()){
@@ -124,18 +128,27 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
             projectile.move();
             projectile.checkDeath();
         }
-        this.lastProjectileShot = Math.max(0, this.lastProjectileShot - 0.1);
     }
 
     private void handleInput(){
-        if(pressedKeys.contains(KeyEvent.VK_UP)) player.move(1, 0);
-        else if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player.move(0, 1);
-        else if(pressedKeys.contains(KeyEvent.VK_DOWN)) player.move(-1, 0);
-        else if(pressedKeys.contains(KeyEvent.VK_LEFT)) player.move(0, -1);
+        // Player 1
+        if(pressedKeys.contains(KeyEvent.VK_W)) player1.move(1, 0);
+        else if(pressedKeys.contains(KeyEvent.VK_D)) player1.move(0, 1);
+        else if(pressedKeys.contains(KeyEvent.VK_S)) player1.move(-1, 0);
+        else if(pressedKeys.contains(KeyEvent.VK_A)) player1.move(0, -1);
 
-        if (pressedKeys.contains(KeyEvent.VK_SPACE) && this.lastProjectileShot == 0.0){
-            player.shoot();
-            this.lastProjectileShot = 1.0;
+        if (pressedKeys.contains(KeyEvent.VK_SPACE)){
+            player1.shoot();
+        }
+
+        // Player 2
+        if(pressedKeys.contains(KeyEvent.VK_UP)) player2.move(1, 0);
+        else if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player2.move(0, 1);
+        else if(pressedKeys.contains(KeyEvent.VK_DOWN)) player2.move(-1, 0);
+        else if(pressedKeys.contains(KeyEvent.VK_LEFT)) player2.move(0, -1);
+
+        if (pressedKeys.contains(KeyEvent.VK_K)){
+            player2.shoot();
         }
     }
 
