@@ -1,6 +1,5 @@
 package com.tatuck.view;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
