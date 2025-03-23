@@ -6,14 +6,12 @@ public class Tile {
     public int posX, posY;
     public int tileId;
     public TileProperties properties;
-    public Texture texture;
 
     public Tile(int ID, int posX, int posY){
         this.properties = TileManager.getTilePropertiesFromID(ID);
         this.tileId = ID;
         this.posX = posX;
         this.posY = posY;
-        this.texture = new Texture(ID);
     }
 
     public void setPos(int posX, int posY){

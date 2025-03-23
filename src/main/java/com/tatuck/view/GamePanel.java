@@ -9,10 +9,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
-
 import javax.swing.Timer;
+import java.util.ArrayList;
 
 import com.tatuck.models.Player;
+import com.tatuck.models.Projectile;
 import com.tatuck.controller.Map;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener{
@@ -33,6 +34,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         // Create tiles
         tm.loadTexture(0, "resources/tiles/grass.png");
         TileManager.createTile(0, true, 3);
+        TileManager.createTile(1, false, 1); 
+        TileManager.createTile(2, false, 1);
+        TileManager.createTile(3, false, 1); 
 
 
         // Set up sprites
@@ -40,6 +44,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         tm.loadTexture(201, "resources/sprites/player/down.png");
         tm.loadTexture(202, "resources/sprites/player/right.png");
         tm.loadTexture(203, "resources/sprites/player/left.png");
+
+        // Set up items
+        tm.loadTexture(300, "resources/items/kebab.png");
         
         PlayeableTexture playerTexture = new PlayeableTexture(200, 201, 202, 203);
         this.map = new Map("resources/map.txt");
@@ -61,18 +68,30 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         cameraX = player.x - SCREEN_WIDTH / 2;
         cameraY = player.y - SCREEN_HEIGHT / 2;
         // Check if camera is outside world limits
-        cameraX = Math.max(0, Math.min(cameraX, Tile.TILE_SIZE - SCREEN_WIDTH));
-        cameraY = Math.max(0, Math.min(cameraY, Tile.TILE_SIZE - SCREEN_HEIGHT));
+        cameraX = Math.max(0, Math.min(cameraX, map.getWidth() * Tile.TILE_SIZE - SCREEN_WIDTH));
+        cameraY = Math.max(0, Math.min(cameraY, map.getHeight() * Tile.TILE_SIZE - SCREEN_HEIGHT));
 
+        // Paint tiles
         for(Tile tile : map){
             int screenX = tile.posX * Tile.TILE_SIZE - cameraX;
             int screenY = tile.posY * Tile.TILE_SIZE - cameraY;
             g2d.drawImage(tm.getTexture(tile.tileId), screenX, screenY, Tile.TILE_SIZE, Tile.TILE_SIZE, null);
         }
 
+        // Paint player
         BufferedImage playerTexture = player.playeableTexture.getCurrentTexture();
         
-        g2d.drawImage(playerTexture, player.x, player.y, playerTexture.getWidth(), playerTexture.getHeight(), null);
+        int playerPosX = player.x - cameraX;
+        int playerPosY = player.y - cameraY;
+        g2d.drawImage(playerTexture, playerPosX, playerPosY, playerTexture.getWidth(), playerTexture.getHeight(), null);
+
+        // Paint projectiles
+        for (Projectile projectile : this.map.getProjectiles()){
+            BufferedImage projectileTexture = projectile.getCurrentTexture();
+            int screenX = projectile.x - cameraX;
+            int screenY = projectile.y - cameraY;
+            g2d.drawImage(projectileTexture, screenX, screenY, 32, 32, null);
+        }
     }
 
     @Override
@@ -91,14 +110,25 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     @Override
     public void actionPerformed(ActionEvent e){
         handleInput();
+        moveProjectiles();
         repaint();
+    }
+
+    private void moveProjectiles(){
+        ArrayList<Projectile> projectiles = new ArrayList<>(this.map.getProjectiles());
+        for (Projectile projectile : projectiles){
+            projectile.move();
+            projectile.checkDeath();
+        }
     }
 
     private void handleInput(){
         if(pressedKeys.contains(KeyEvent.VK_UP)) player.move(1, 0);
-        if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player.move(0, 1);
-        if(pressedKeys.contains(KeyEvent.VK_DOWN)) player.move(-1, 0);
-        if(pressedKeys.contains(KeyEvent.VK_LEFT)) player.move(0, -1);
+        else if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player.move(0, 1);
+        else if(pressedKeys.contains(KeyEvent.VK_DOWN)) player.move(-1, 0);
+        else if(pressedKeys.contains(KeyEvent.VK_LEFT)) player.move(0, -1);
+
+        if (pressedKeys.contains(KeyEvent.VK_SPACE)) player.shoot();
     }
 
 }

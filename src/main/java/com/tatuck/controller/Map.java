@@ -4,13 +4,16 @@ import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.ArrayList;
 
 import com.tatuck.view.Tile;
+import com.tatuck.models.Projectile;
 
 public class Map implements Iterable<Tile>{
     private int TILE_SIZE = Tile.TILE_SIZE;
     private Tile[][] tileMap;
     private int height, width = 0;
+    public ArrayList<Projectile> projectiles;
 
     public Map(String mapFilePath){
         try {
@@ -51,6 +54,19 @@ public class Map implements Iterable<Tile>{
         } catch(Exception e){
             e.printStackTrace();
         }
+        projectiles = new ArrayList<>();
+    }
+
+    public void addProjectile(Projectile projectile) {
+        this.projectiles.add(projectile);
+    }
+
+    public void removeProjectile(Projectile projectile){
+        this.projectiles.remove(projectile);
+    }
+
+    public ArrayList<Projectile> getProjectiles() {
+        return this.projectiles;
     }
 
     public Tile getTileAtScreenCoord(int x, int y){
@@ -65,6 +81,14 @@ public class Map implements Iterable<Tile>{
             return tileMap[y][x];
         }
         return null;
+    }
+
+    public int getWidth(){
+        return this.width;
+    }
+
+    public int getHeight(){
+        return this.height;
     }
 
     @Override

@@ -35,4 +35,8 @@ public class PlayeableTexture {
     public void setDirection(Direction direction) {
         this.currentDirection = direction;
     }
+
+    public Direction getDirection(){
+        return this.currentDirection;
+    }
 }
