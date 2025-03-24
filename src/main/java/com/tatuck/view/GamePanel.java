@@ -38,10 +38,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 
         // Create tiles
         tm.loadTexture(0, "resources/tiles/grass.png");
+        tm.loadTexture(1, "resources/tiles/fastgrass.png");
+        tm.loadTexture(2, "resources/tiles/cubobasura_marron.png");
+        tm.loadTexture(3, "resources/tiles/cubobasura_naranja.png");
+        tm.loadTexture(4, "resources/tiles/cubobasura_amarillo.png");
         TileManager.createTile(0, true, 3);
-        TileManager.createTile(1, false, 1); 
-        TileManager.createTile(2, false, 1);
-        TileManager.createTile(3, false, 1); 
+        TileManager.createTile(1, true, 10);
+        TileManager.createTile(2, false, 1); 
+        TileManager.createTile(3, false, 1);
+        TileManager.createTile(4, false, 1); 
 
 
         // Set up sprites
@@ -60,7 +65,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         
         PlayeableTexture player1Texture = new PlayeableTexture(200, 201, 202, 203);
         PlayeableTexture player2Texture = new PlayeableTexture(204, 205, 206, 207);
-        this.map = new Map("resources/map.txt");
+        this.map = new Map();
         this.player1 = new Player("Jugador 1", 2, 0, this.map, player1Texture);
         this.player2 = new Player("Jugador 2", 25, 0, this.map, player2Texture);
         this.pressedKeys = new HashSet<>();

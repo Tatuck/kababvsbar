@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.tatuck.view.Tile;
 import com.tatuck.models.Projectile;
@@ -16,6 +17,7 @@ public class Map implements Iterable<Tile>{
     public ArrayList<Projectile> projectiles;
 
     public Map(String mapFilePath){
+        this.initialize();
         try {
             InputStream inputStream = Map.class.getClassLoader().getResourceAsStream(mapFilePath);
             
@@ -54,7 +56,32 @@ public class Map implements Iterable<Tile>{
         } catch(Exception e){
             e.printStackTrace();
         }
-        projectiles = new ArrayList<>();
+    }
+
+    public Map(){
+        this.initialize();
+        Random r = new Random();
+        // create random map
+        this.width = 300;
+        this.height = 200;
+        this.tileMap = new Tile[height][width];
+        for(int x = 0; x < width; x ++){
+            for(int y = 0; y < height; y ++){
+                if(r.nextInt(100) < 90){
+                    if(r.nextInt(100)<75){
+                        this.tileMap[y][x] = new Tile(0, x, y);
+                    }else{
+                        this.tileMap[y][x] = new Tile(1, x, y);
+                    }
+                } else{
+                    this.tileMap[y][x] = new Tile(r.nextInt(3) + 2, x, y);
+                }
+            }
+        }
+    }
+
+    private void initialize(){
+        this.projectiles = new ArrayList<>();
     }
 
     public void addProjectile(Projectile projectile) {
