@@ -37,11 +37,24 @@ public class Entity {
         Tile currentTile = map.getTileAtScreenCoord(x, y);
         int newX = (int) (x + rightLeft * defaultSpeed * currentTile.properties.getSpeedMultiplier());
         int newY = (int) (y - upDown * defaultSpeed * currentTile.properties.getSpeedMultiplier());
-        BufferedImage currentTexture = getCurrentTexture(); // TODO: fix bug walking through unkalbable tiles if the entity isn't fully inside the tile
-        if (this.canBeIn(newX + Math.max(0, rightLeft * currentTexture.getWidth()), newY - Math.min(0, upDown * currentTexture.getHeight()))){
-            this.x = newX;
-            this.y = newY;
+        BufferedImage currentTexture = getCurrentTexture();
+        int width = currentTexture.getWidth();
+        int height = currentTexture.getHeight();
+        
+        if (!canBeIn(newX, newY)) {
+            return;
         }
+        if (!canBeIn(newX + width, newY)) {
+            return;
+        }
+        if (!canBeIn(newX, newY + height)) {
+            return;
+        }
+        if (!canBeIn(newX + width, newY + height)) {
+            return;
+        }
+        this.x = newX;
+        this.y = newY;
     }
 
     public boolean intersectsWith(Entity otherEntity){
