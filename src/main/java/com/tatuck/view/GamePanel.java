@@ -31,7 +31,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private Map map;
     private final Timer timer;
     private TextureManager tm;
-
+    // TODO: 
+    // Hacer pantalla de carga
+    // Hacer pantalla volver a empezar
+    // Poner NPCs que ataquen?
+    // Poner animaciones cuando das una bala
+    // Poner modo 1 jugador?
+    // Poner varias texturas para las balas
+    // Evitar que puedan aparecer tiles en el sitio donde spawnen los jugadores
 
     public GamePanel(){
         tm = TextureManager.getInstance();
