@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-
 import javax.swing.JPanel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -21,7 +20,7 @@ import com.tatuck.models.Projectile;
 import com.tatuck.controller.Map;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener{
-    private final Player player1, player2;
+    private Player player1, player2;
 
     public static final int SCREEN_WIDTH = 1020;//640;
     public static final int SCREEN_HEIGHT = 700; //480;
@@ -29,8 +28,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private int cameraX, cameraY;
     private HashSet<Integer> pressedKeys;
     private Map map;
-    private final Timer timer;
+    private Timer timer, timerWinner;
     private TextureManager tm;
+    private PlayeableTexture player1Texture, player2Texture;
     // TODO: 
     // Hacer pantalla de carga
     // Hacer pantalla volver a empezar
@@ -70,14 +70,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         // Set up items
         tm.loadTexture(300, "resources/items/kebab.png");
         
-        PlayeableTexture player1Texture = new PlayeableTexture(200, 201, 202, 203);
-        PlayeableTexture player2Texture = new PlayeableTexture(204, 205, 206, 207);
+        player1Texture = new PlayeableTexture(200, 201, 202, 203);
+        player2Texture = new PlayeableTexture(204, 205, 206, 207);
+    }
+
+    public void reset(){
         this.map = new Map();
-        this.player1 = new Player("Jugador 1", 2, 0, this.map, player1Texture);
-        this.player2 = new Player("Jugador 2", 25, 0, this.map, player2Texture);
+        this.player1 = new Player("Jugador 1", 2, 0, this.map, this.player1Texture);
+        this.player2 = new Player("Jugador 2", 25, 0, this.map, this.player2Texture);
         this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
         this.setFocusable(true);
+
+        // Reset winner timer
+        timerWinner = null;
 
         // Start timer
         timer = new Timer(16, this); // 60 FPS
@@ -88,19 +94,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics g2d = (Graphics2D) g;
-        Player winner;
-        if ((winner = this.getWinner()) != null){
-            Font font = new Font("Arial", Font.BOLD, 100);
-            g2d.setFont(font);
-            g2d.drawString("GANADOR:", SCREEN_WIDTH/4 - 20, SCREEN_HEIGHT/2 - 60);
-            String winnerString = winner + "!";
-            FontMetrics fontMetrics = g2d.getFontMetrics(font);
-            int textPosX = (SCREEN_WIDTH - fontMetrics.stringWidth(winnerString))/2;
-            int textPosY = (SCREEN_HEIGHT - fontMetrics.getAscent()) / 2 + fontMetrics.getAscent();
-            g2d.drawString(winnerString, textPosX, textPosY);
-            this.timer.stop();
-            return;
-        }
         // Center camera on average of both players
         cameraX = ((player1.x + player2.x)/2) - SCREEN_WIDTH / 2;
         cameraY = ((player1.y + player2.y)/2)  - SCREEN_HEIGHT / 2;
@@ -135,6 +128,30 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         g2d.setFont(new Font("Arial", Font.BOLD, 30));
         g2d.drawString("JUGADOR 1: " + player1.getHealth(), 20, SCREEN_HEIGHT-50);
         g2d.drawString("JUGADOR 2: " + player2.getHealth(), SCREEN_WIDTH-280, SCREEN_HEIGHT-50);
+        
+        // Check if there is a winner
+        Player winner;
+        if ((winner = this.getWinner()) != null){
+            Font font = new Font("Arial", Font.BOLD, 100);
+            g2d.setFont(font);
+            g2d.drawString("GANADOR:", SCREEN_WIDTH/4 - 20, SCREEN_HEIGHT/2 - 60);
+            String winnerString = winner + "!";
+            FontMetrics fontMetrics = g2d.getFontMetrics(font);
+            int textPosX = (SCREEN_WIDTH - fontMetrics.stringWidth(winnerString))/2;
+            int textPosY = (SCREEN_HEIGHT - fontMetrics.getAscent()) / 2 + fontMetrics.getAscent();
+            g2d.drawString(winnerString, textPosX, textPosY);
+            if(timerWinner == null){
+                timerWinner = new Timer(3000, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e){
+                        GamePanel.this.timer.stop();
+                        ChangePanels.getInstance().changePanels("start");
+                        GamePanel.this.timerWinner.stop();
+                    }
+                });
+                timerWinner.start();
+            }            
+        }
     }
 
     @Override
