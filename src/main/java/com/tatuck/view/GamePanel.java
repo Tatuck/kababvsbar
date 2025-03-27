@@ -33,10 +33,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private TextureManager tm;
     private PlayeableTexture player1Texture, player2Texture;
     // TODO: 
-    // Poner NPCs que ataquen?
+    // Poner NPCs que ataquen
     // Poner animaciones cuando das una bala
-    // Poner modo 1 jugador?
+    // Poner modo 1 jugador
     // Poner varias texturas para las balas
+    // Poner rectángulo para ver la vida de los jugadores
+    // 
 
     public GamePanel(){
         tm = TextureManager.getInstance();
