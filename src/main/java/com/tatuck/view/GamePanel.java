@@ -32,8 +32,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private TextureManager tm;
     private PlayeableTexture player1Texture, player2Texture;
     // TODO: 
-    // Hacer pantalla de carga
-    // Hacer pantalla volver a empezar
     // Poner NPCs que ataquen?
     // Poner animaciones cuando das una bala
     // Poner modo 1 jugador?
