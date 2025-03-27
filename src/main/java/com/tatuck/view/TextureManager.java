@@ -33,7 +33,7 @@ public class TextureManager {
         return textures.get(ID);
     }
 
-    private BufferedImage loadImage(String path) {
+    public static BufferedImage loadImage(String path) {
         try {
             InputStream inputStream = TextureManager.class.getClassLoader().getResourceAsStream(path);
             if (inputStream != null) {
