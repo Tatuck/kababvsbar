@@ -22,7 +22,6 @@ public class Projectile extends Entity {
     }
 
     public void move() {
-        System.out.println("Moviendo");
         if(death) return;
         switch (this.direction){
             case Direction.UP: y = (int) (y - defaultSpeed); return;
