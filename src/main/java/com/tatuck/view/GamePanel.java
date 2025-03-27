@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import javax.swing.Timer;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.tatuck.models.Player;
 import com.tatuck.models.Projectile;
@@ -36,7 +37,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     // Poner animaciones cuando das una bala
     // Poner modo 1 jugador?
     // Poner varias texturas para las balas
-    // Evitar que puedan aparecer tiles en el sitio donde spawnen los jugadores
 
     public GamePanel(){
         tm = TextureManager.getInstance();
@@ -74,8 +74,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 
     public void reset(){
         this.map = new Map();
-        this.player1 = new Player("Jugador 1", 2, 0, this.map, this.player1Texture);
-        this.player2 = new Player("Jugador 2", 25, 0, this.map, this.player2Texture);
+        Random r = new Random();
+        int player1TileX = r.nextInt(map.getWidth());
+        int player1TileY = r.nextInt(map.getHeight());
+        int player2TileX = r.nextInt(map.getWidth());
+        int player2TileY = r.nextInt(map.getHeight());
+
+        this.player1 = new Player("Jugador 1", player1TileX * Tile.TILE_SIZE, player1TileY * Tile.TILE_SIZE, this.map, this.player1Texture);
+        this.player2 = new Player("Jugador 2", player2TileX * Tile.TILE_SIZE, player2TileY * Tile.TILE_SIZE, this.map, this.player2Texture);
+        map.putWalkableTile(player1TileX, player1TileY);
+        map.putWalkableTile(player2TileX, player2TileY);
         this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
         this.setFocusable(true);

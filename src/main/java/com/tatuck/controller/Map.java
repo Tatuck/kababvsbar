@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.tatuck.view.GamePanel;
 import com.tatuck.view.Tile;
 import com.tatuck.models.Projectile;
 
@@ -58,24 +59,33 @@ public class Map implements Iterable<Tile>{
         }
     }
 
+    private Tile getRandomTile(int x, int y){
+        return this.getRandomTile(x, y, false);
+    }
+
+    private Tile getRandomTile(int x, int y, boolean forceWalkable){
+        Random r = new Random();
+        if(forceWalkable || r.nextInt(100) < 90){
+            if(r.nextInt(100)<75){
+                return new Tile(0, x, y);
+            }else{
+                return new Tile(1, x, y);
+            }
+        } else{
+            return new Tile(r.nextInt(3) + 2, x, y);
+        }
+    }
+
     public Map(){
         this.initialize();
-        Random r = new Random();
         // create random map
-        this.width = 300;
-        this.height = 200;
+        Random r = new Random();
+        this.width = GamePanel.SCREEN_WIDTH/this.TILE_SIZE * (100 + r.nextInt(30))/100;
+        this.height = GamePanel.SCREEN_HEIGHT/this.TILE_SIZE * (100 + r.nextInt(20))/100;
         this.tileMap = new Tile[height][width];
         for(int x = 0; x < width; x ++){
             for(int y = 0; y < height; y ++){
-                if(r.nextInt(100) < 90){
-                    if(r.nextInt(100)<75){
-                        this.tileMap[y][x] = new Tile(0, x, y);
-                    }else{
-                        this.tileMap[y][x] = new Tile(1, x, y);
-                    }
-                } else{
-                    this.tileMap[y][x] = new Tile(r.nextInt(3) + 2, x, y);
-                }
+                this.tileMap[y][x] = this.getRandomTile(x, y);
             }
         }
     }
@@ -116,6 +126,10 @@ public class Map implements Iterable<Tile>{
 
     public int getHeight(){
         return this.height;
+    }
+
+    public void putWalkableTile(int x, int y){
+        this.tileMap[y][x] = this.getRandomTile(x, y, true);
     }
 
     @Override
