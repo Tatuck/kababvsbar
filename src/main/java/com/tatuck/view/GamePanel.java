@@ -68,7 +68,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         tm.loadTexture(207, "resources/sprites/player2/left.png");
 
         // Set up items
-        tm.loadTexture(300, "resources/items/kebab.png");
+        tm.loadTexture(300, "resources/items/paella.png");
+        tm.loadTexture(301, "resources/items/tortilla.png");
+        tm.loadTexture(302, "resources/items/kebab.png");
+        tm.loadTexture(303, "resources/items/falafel.png");
         
         player1Texture = new PlayeableTexture(200, 201, 202, 203);
         player2Texture = new PlayeableTexture(204, 205, 206, 207);
@@ -82,8 +85,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         int player2TileX = r.nextInt(map.getWidth());
         int player2TileY = r.nextInt(map.getHeight());
 
-        this.player1 = new Player("Jugador 1", player1TileX * Tile.TILE_SIZE, player1TileY * Tile.TILE_SIZE, this.map, this.player1Texture);
-        this.player2 = new Player("Jugador 2", player2TileX * Tile.TILE_SIZE, player2TileY * Tile.TILE_SIZE, this.map, this.player2Texture);
+        int[] player1ProjectileTextures = {300, 301};
+        int[] player2ProjectileTextures = {302, 303};
+        this.player1 = new Player("Jugador 1", player1ProjectileTextures, player1TileX * Tile.TILE_SIZE, player1TileY * Tile.TILE_SIZE, this.map, this.player1Texture);
+        this.player2 = new Player("Jugador 2", player2ProjectileTextures, player2TileX * Tile.TILE_SIZE, player2TileY * Tile.TILE_SIZE, this.map, this.player2Texture);
         map.putWalkableTile(player1TileX, player1TileY);
         map.putWalkableTile(player2TileX, player2TileY);
         this.pressedKeys = new HashSet<>();
