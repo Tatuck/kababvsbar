@@ -67,6 +67,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         tm.loadTexture(206, "resources/sprites/player2/right.png");
         tm.loadTexture(207, "resources/sprites/player2/left.png");
 
+        tm.loadTexture(204, "resources/sprites/npc/up.png");
+        tm.loadTexture(205, "resources/sprites/npc/down.png");
+        tm.loadTexture(206, "resources/sprites/npc/right.png");
+        tm.loadTexture(207, "resources/sprites/npc/left.png");
+
         // Set up items
         tm.loadTexture(300, "resources/items/paella.png");
         tm.loadTexture(301, "resources/items/tortilla.png");
