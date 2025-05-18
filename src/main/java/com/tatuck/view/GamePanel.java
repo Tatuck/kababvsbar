@@ -38,8 +38,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     private TextureManager tm;
     private PlayeableTexture player1Texture, player2Texture, npcTexture;
     private boolean singlePlayer;
-    // TODO: 
-    // Poner rectángulo para ver la vida de los jugadores
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(GamePanel.SCREEN_WIDTH, GamePanel.SCREEN_HEIGHT));
