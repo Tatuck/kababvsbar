@@ -25,6 +25,7 @@ public class Map implements Iterable<Tile>{
     // A* algorithm
     private class PathNode implements Comparable<PathNode> {
         Tile tile;
+        @SuppressWarnings("unused")
         double gScore; // Costo real desde el inicio hasta este nodo
         double fScore; // Costo estimado total desde el inicio hasta el objetivo (gScore + h)
 
