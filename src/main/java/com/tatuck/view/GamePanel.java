@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.awt.Dimension;
 import java.util.HashSet;
 import javax.swing.Timer;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
     // Poner rectángulo para ver la vida de los jugadores
 
     public GamePanel(){
+        this.setPreferredSize(new Dimension(GamePanel.SCREEN_WIDTH, GamePanel.SCREEN_HEIGHT));
         tm = TextureManager.getInstance();
 
         // Create tiles
@@ -153,13 +155,19 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         // Draw health bars
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Arial", Font.BOLD, 30));
-        g2d.drawString("JUGADOR 1: " + player1.getHealth(), 20, SCREEN_HEIGHT-50);
-        g2d.drawString("JUGADOR 2: " + player2.getHealth(), SCREEN_WIDTH-280, SCREEN_HEIGHT-50);
+        g2d.drawString("JUGADOR 1", 20, SCREEN_HEIGHT-50);
+        g2d.drawString("JUGADOR 2", SCREEN_WIDTH-200, SCREEN_HEIGHT-50);
+        g2d.fillRect(20, SCREEN_HEIGHT-40, 300, 30);
+        g2d.fillRect(SCREEN_WIDTH-320, SCREEN_HEIGHT-40, 300, 30);
+        g2d.setColor(Color.GREEN);
+        g2d.fillRect(20, SCREEN_HEIGHT-40, 300*player1.getHealth()/100, 30);
+        g2d.fillRect(SCREEN_WIDTH-(300*player2.getHealth()/100+20), SCREEN_HEIGHT-40, 300*player2.getHealth()/100, 30);
         
         // Check if there is a winner
         PlayeableEntity winner;
         if ((winner = this.getWinner()) != null){
             Font font = new Font("Arial", Font.BOLD, 100);
+            g2d.setColor(Color.BLUE);
             g2d.setFont(font);
             g2d.drawString("GANADOR:", SCREEN_WIDTH/4 - 20, SCREEN_HEIGHT/2 - 60);
             String winnerString = winner + "!";

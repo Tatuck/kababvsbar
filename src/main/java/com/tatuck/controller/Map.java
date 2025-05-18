@@ -117,8 +117,8 @@ public class Map implements Iterable<Tile>{
         this.initialize();
         // create random map
         Random r = new Random();
-        this.width = GamePanel.SCREEN_WIDTH/this.TILE_SIZE * (100 + r.nextInt(30))/100;
-        this.height = GamePanel.SCREEN_HEIGHT/this.TILE_SIZE * (100 + r.nextInt(20))/100;
+        this.width = GamePanel.SCREEN_WIDTH/this.TILE_SIZE * (120 + r.nextInt(30))/100;
+        this.height = GamePanel.SCREEN_HEIGHT/this.TILE_SIZE * (120 + r.nextInt(20))/100;
         this.tileMap = new Tile[height][width];
         for(int x = 0; x < width; x ++){
             for(int y = 0; y < height; y ++){

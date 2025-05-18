@@ -3,7 +3,6 @@ package com.tatuck;
 import javax.swing.JFrame;
 
 import com.tatuck.view.ChangePanels;
-import com.tatuck.view.GamePanel;
 
 public class Main {
     public static void main(String[] args){
@@ -13,8 +12,7 @@ public class Main {
         changePanels.addComponentToPane(frame.getContentPane());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        frame.setSize(GamePanel.SCREEN_WIDTH, GamePanel.SCREEN_HEIGHT);
-        frame.setLocationRelativeTo(null);
+        frame.pack();
         frame.setVisible(true);
     }
 }
