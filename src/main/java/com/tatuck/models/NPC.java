@@ -49,7 +49,7 @@ public class NPC extends PlayeableEntity implements Runnable{
             if (nextTile.posX > currentTileX) {
                 this.move(0, 1); // Right
             } else if (nextTile.posX < currentTileX) {
-                this.move(0, -1); // Left // MARCOOOOOOOOOOOOOOOOOOOOOOOOOOOSSSSSSSSSSSSS NO TIENE BIEN EL PATH PORQUE QUIERE IR A LA Izq
+                this.move(0, -1); // Left
             } else if (nextTile.posY > currentTileY) {
                 this.move(-1, 0); // Down
             } else if (nextTile.posY < currentTileY) {
