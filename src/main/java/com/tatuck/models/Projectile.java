@@ -10,9 +10,9 @@ public class Projectile extends Entity {
     private int damage = 10;
     private boolean death = false;
     private Direction direction;
-    private Player shooter;
+    private PlayeableEntity shooter;
 
-    public Projectile(int x, int y, Map map, BufferedImage texture, Direction direction, Player shooter) {
+    public Projectile(int x, int y, Map map, BufferedImage texture, Direction direction, PlayeableEntity shooter) {
         super(x, y, map, texture);
         this.direction = direction;
         Random r = new Random();
@@ -38,7 +38,7 @@ public class Projectile extends Entity {
         }
     }
 
-    public boolean checkCollision(Player player){
+    public boolean checkCollision(PlayeableEntity player){
         if (player == this.shooter) return false;
         if (this.intersectsWith(player)){
             this.death = true;

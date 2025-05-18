@@ -3,8 +3,13 @@ package com.tatuck.controller;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.PriorityQueue;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import com.tatuck.view.GamePanel;
@@ -16,6 +21,37 @@ public class Map implements Iterable<Tile>{
     private Tile[][] tileMap;
     private int height, width = 0;
     public ArrayList<Projectile> projectiles;
+
+    // A* algorithm
+    private class PathNode implements Comparable<PathNode> {
+        Tile tile;
+        double gScore; // Costo real desde el inicio hasta este nodo
+        double fScore; // Costo estimado total desde el inicio hasta el objetivo (gScore + h)
+
+        PathNode(Tile tile, double gScore, double fScore) {
+            this.tile = tile;
+            this.gScore = gScore;
+            this.fScore = fScore;
+        }
+
+        @Override
+        public int compareTo(PathNode other) {
+            return Double.compare(this.fScore, other.fScore);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PathNode pathNode = (PathNode) o;
+            return tile.equals(pathNode.tile);
+        }
+
+        @Override
+        public int hashCode() {
+            return tile.hashCode();
+        }
+    }
 
     public Map(String mapFilePath){
         this.initialize();
@@ -132,6 +168,102 @@ public class Map implements Iterable<Tile>{
         this.tileMap[y][x] = this.getRandomTile(x, y, true);
     }
 
+    public ArrayList<Tile> getTileNeighbors(Tile tile) {
+        ArrayList<Tile> neighbors = new ArrayList<>();
+        Tile up = getTileAtCoord(tile.posX, tile.posY - 1);
+        Tile down = getTileAtCoord(tile.posX, tile.posY + 1);
+        Tile right = getTileAtCoord(tile.posX + 1, tile.posY);
+        Tile left = getTileAtCoord(tile.posX - 1, tile.posY);
+        if (up != null && up.properties.getWalkable()) neighbors.add(up);
+        if (down != null && down.properties.getWalkable()) neighbors.add(down);
+        if (right != null && right.properties.getWalkable()) neighbors.add(right);
+        if (left != null && left.properties.getWalkable()) neighbors.add(left);
+        return neighbors;
+    }
+
+    private double heuristic(Tile tile1, Tile tile2) {
+        return Math.abs(tile1.posX - tile2.posX) + Math.abs(tile1.posY - tile2.posY);
+    }
+
+    // Esto es una locura de implementar, un saludo :)
+    // Además, no funciona del todo bien, pero bueno.
+    // https://www.geeksforgeeks.org/a-search-algorithm/
+    public List<Tile> findShortestPath(Tile startTile, Tile goalTile) {
+        if (startTile == null || goalTile == null){ // || !startTile.properties.getWalkable() || !goalTile.properties.getWalkable()) {
+            return null;
+        }
+        
+        if (startTile.equals(goalTile)) {
+            List<Tile> path = new ArrayList<>();
+            path.add(startTile);
+            return path;
+        }
+
+
+        PriorityQueue<PathNode> openList = new PriorityQueue<>();
+        HashSet<Tile> closedList = new HashSet<>();
+        HashMap<Tile, Double> gScore = new HashMap<>();
+        HashMap<Tile, Tile> cameFrom = new HashMap<>();
+
+        gScore.put(startTile, 0.0);
+        double initialFScore = heuristic(startTile, goalTile);
+
+        PathNode startNode = new PathNode(startTile, 0.0, initialFScore);
+        openList.add(startNode);
+
+        while (!openList.isEmpty()) {
+            PathNode currentNode = openList.poll();
+
+            if (closedList.contains(currentNode.tile)) {
+                continue;
+            }
+
+            if (currentNode.tile.equals(goalTile)) {
+                return reconstructPath(cameFrom, goalTile);
+            }
+
+            closedList.add(currentNode.tile);
+
+
+            List<Tile> neighbors = getTileNeighbors(currentNode.tile);
+            for (Tile neighborTile : neighbors) {
+                if (closedList.contains(neighborTile)) {
+                    continue;
+                }
+
+                if (!neighborTile.properties.getWalkable()) {
+                    continue;
+                }
+
+                double tentativeGScore = gScore.get(currentNode.tile) + 1.0;
+
+                if (!gScore.containsKey(neighborTile) || tentativeGScore < gScore.get(neighborTile)) {
+
+                    cameFrom.put(neighborTile, currentNode.tile);
+                    gScore.put(neighborTile, tentativeGScore);
+                    double neighborFScore = tentativeGScore + heuristic(neighborTile, goalTile);
+
+                    PathNode neighborNode = new PathNode(neighborTile, tentativeGScore, neighborFScore);
+                    openList.add(neighborNode);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private List<Tile> reconstructPath(HashMap<Tile, Tile> cameFrom, Tile currentTile) {
+        List<Tile> totalPath = new ArrayList<>();
+        totalPath.add(currentTile);
+        while (cameFrom.containsKey(currentTile)) {
+            currentTile = cameFrom.get(currentTile);
+            totalPath.add(currentTile);
+        }
+        Collections.reverse(totalPath);
+        return totalPath;
+    }
+
+
     @Override
     public Iterator<Tile> iterator() {
         return new Iterator<Tile>() {
@@ -140,7 +272,7 @@ public class Map implements Iterable<Tile>{
 
             @Override
             public boolean hasNext() {
-                return currentRow < height && currentCol < width;
+                return currentRow < height && (currentRow < height - 1 || currentCol < width);
             }
 
             @Override

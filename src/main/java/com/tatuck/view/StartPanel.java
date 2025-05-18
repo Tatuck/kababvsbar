@@ -25,6 +25,15 @@ public class StartPanel extends JPanel{
 
         JButton button1Player = new JButton("1 JUGADOR");
         this.styleButton(button1Player);
+        button1Player.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                ChangePanels cp = ChangePanels.getInstance();
+                cp.getGamePanel().reset(true);
+                cp.changePanels("game");
+                cp.getGamePanel().requestFocusInWindow();
+            }
+        });
 
         JButton button2Players = new JButton("2 JUGADORES");
         this.styleButton(button2Players);
@@ -32,7 +41,7 @@ public class StartPanel extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e){
                 ChangePanels cp = ChangePanels.getInstance();
-                cp.getGamePanel().reset();
+                cp.getGamePanel().reset(false);
                 cp.changePanels("game");
                 cp.getGamePanel().requestFocusInWindow();
             }

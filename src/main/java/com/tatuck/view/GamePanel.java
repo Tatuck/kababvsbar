@@ -16,29 +16,29 @@ import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.tatuck.models.NPC;
+import com.tatuck.models.PlayeableEntity;
 import com.tatuck.models.Player;
 import com.tatuck.models.Projectile;
 import com.tatuck.controller.Map;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener{
-    private Player player1, player2;
+    private Player player1;
+    private PlayeableEntity player2;
 
     public static final int SCREEN_WIDTH = 1020;//640;
     public static final int SCREEN_HEIGHT = 700; //480;
+    public static final int FPS = 60;
 
     private int cameraX, cameraY;
     private HashSet<Integer> pressedKeys;
     private Map map;
     private Timer timer, timerWinner;
     private TextureManager tm;
-    private PlayeableTexture player1Texture, player2Texture;
+    private PlayeableTexture player1Texture, player2Texture, npcTexture;
+    private boolean singlePlayer;
     // TODO: 
-    // Poner NPCs que ataquen
-    // Poner animaciones cuando das una bala
-    // Poner modo 1 jugador
-    // Poner varias texturas para las balas
     // Poner rectángulo para ver la vida de los jugadores
-    // 
 
     public GamePanel(){
         tm = TextureManager.getInstance();
@@ -67,10 +67,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         tm.loadTexture(206, "resources/sprites/player2/right.png");
         tm.loadTexture(207, "resources/sprites/player2/left.png");
 
-        tm.loadTexture(204, "resources/sprites/npc/up.png");
-        tm.loadTexture(205, "resources/sprites/npc/down.png");
-        tm.loadTexture(206, "resources/sprites/npc/right.png");
-        tm.loadTexture(207, "resources/sprites/npc/left.png");
+        tm.loadTexture(208, "resources/sprites/npc/up.png");
+        tm.loadTexture(209, "resources/sprites/npc/down.png");
+        tm.loadTexture(210, "resources/sprites/npc/right.png");
+        tm.loadTexture(211, "resources/sprites/npc/left.png");
 
         // Set up items
         tm.loadTexture(300, "resources/items/paella.png");
@@ -80,9 +80,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         
         player1Texture = new PlayeableTexture(200, 201, 202, 203);
         player2Texture = new PlayeableTexture(204, 205, 206, 207);
+        npcTexture = new PlayeableTexture(208, 209, 210, 211);
     }
 
-    public void reset(){
+    public void reset(boolean singlePlayer){
+        this.singlePlayer = singlePlayer;
         this.map = new Map();
         Random r = new Random();
         int player1TileX = r.nextInt(map.getWidth());
@@ -93,9 +95,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         int[] player1ProjectileTextures = {300, 301};
         int[] player2ProjectileTextures = {302, 303};
         this.player1 = new Player("Jugador 1", player1ProjectileTextures, player1TileX * Tile.TILE_SIZE, player1TileY * Tile.TILE_SIZE, this.map, this.player1Texture);
-        this.player2 = new Player("Jugador 2", player2ProjectileTextures, player2TileX * Tile.TILE_SIZE, player2TileY * Tile.TILE_SIZE, this.map, this.player2Texture);
         map.putWalkableTile(player1TileX, player1TileY);
+        
+        if (!singlePlayer){
+            this.player2 = new Player("Jugador 2", player2ProjectileTextures, player2TileX * Tile.TILE_SIZE, player2TileY * Tile.TILE_SIZE, this.map, this.player2Texture);
+        } else{
+            this.player2 = new NPC("NPC", player2ProjectileTextures, player2TileX * Tile.TILE_SIZE, player2TileY * Tile.TILE_SIZE, this.map, this.npcTexture, new Player[]{this.player1});
+            new Thread((NPC)this.player2).start();
+        }
         map.putWalkableTile(player2TileX, player2TileY);
+        
         this.pressedKeys = new HashSet<>();
         this.addKeyListener(this);
         this.setFocusable(true);
@@ -104,7 +113,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         timerWinner = null;
 
         // Start timer
-        timer = new Timer(16, this); // 60 FPS
+        timer = new Timer(1000/FPS, this);
         timer.start();
     }
 
@@ -148,7 +157,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         g2d.drawString("JUGADOR 2: " + player2.getHealth(), SCREEN_WIDTH-280, SCREEN_HEIGHT-50);
         
         // Check if there is a winner
-        Player winner;
+        PlayeableEntity winner;
         if ((winner = this.getWinner()) != null){
             Font font = new Font("Arial", Font.BOLD, 100);
             g2d.setFont(font);
@@ -213,6 +222,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
             player1.shoot();
         }
 
+        if (this.singlePlayer){
+            return;
+        }
         // Player 2
         if(pressedKeys.contains(KeyEvent.VK_UP)) player2.move(1, 0);
         else if(pressedKeys.contains(KeyEvent.VK_RIGHT)) player2.move(0, 1);
@@ -224,7 +236,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         }
     }
 
-    private Player getWinner(){
+    private PlayeableEntity getWinner(){
         if(this.player1.getHealth() == 0){
             return this.player2;
         } else if (this.player2.getHealth() == 0){
