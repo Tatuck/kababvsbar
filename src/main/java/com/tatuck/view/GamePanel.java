@@ -85,9 +85,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 
     public void reset(boolean singlePlayer){
         this.singlePlayer = singlePlayer;
-        this.map = new Map();
         Random r = new Random();
-        int player1TileX = r.nextInt(map.getWidth());
+        if(r.nextBoolean()){
+            this.map = new Map("resources/map2.txt");
+        } else{
+            this.map = new Map();
+        }
+                int player1TileX = r.nextInt(map.getWidth());
         int player1TileY = r.nextInt(map.getHeight());
         int player2TileX = r.nextInt(map.getWidth());
         int player2TileY = r.nextInt(map.getHeight());
