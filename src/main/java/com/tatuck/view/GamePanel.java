@@ -157,8 +157,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         g2d.drawString("JUGADOR 2", SCREEN_WIDTH-200, SCREEN_HEIGHT-50);
         g2d.fillRect(20, SCREEN_HEIGHT-40, 300, 30);
         g2d.fillRect(SCREEN_WIDTH-320, SCREEN_HEIGHT-40, 300, 30);
-        g2d.setColor(Color.GREEN);
+        g2d.setColor(getHealthColor(player1.getHealth()));
         g2d.fillRect(20, SCREEN_HEIGHT-40, 300*player1.getHealth()/100, 30);
+        g2d.setColor(getHealthColor(player2.getHealth()));
         g2d.fillRect(SCREEN_WIDTH-(300*player2.getHealth()/100+20), SCREEN_HEIGHT-40, 300*player2.getHealth()/100, 30);
         
         // Check if there is a winner
@@ -239,6 +240,16 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
 
         if (pressedKeys.contains(KeyEvent.VK_K)){
             player2.shoot();
+        }
+    }
+
+    private Color getHealthColor(int health) {
+        if (health > 66) {
+            return Color.GREEN;
+        } else if (health > 33) {
+            return Color.ORANGE;
+        } else {
+            return Color.RED;
         }
     }
 
