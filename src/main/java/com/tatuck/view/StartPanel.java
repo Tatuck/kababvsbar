@@ -75,7 +75,7 @@ public class StartPanel extends JPanel{
         text3.setFont(new Font("Arial", Font.BOLD, 15));
         text3.setForeground(Color.ORANGE);
         this.add(text3);
-        this.add(Box.createVerticalStrut(10));        
+        this.add(Box.createVerticalStrut(10));
     }
 
     private void styleButton(JButton button){
