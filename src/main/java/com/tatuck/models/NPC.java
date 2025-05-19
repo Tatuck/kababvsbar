@@ -11,12 +11,14 @@ import com.tatuck.view.Tile;
 public class NPC extends PlayeableEntity implements Runnable{
     Player[] players;
     String name;
+    private boolean keepRunning;
     public NPC(String name, int[] projectileTexturesID, int x, int y, Map map, PlayeableTexture playeableTexture, Player[] players){
         super(x, y, map, playeableTexture, projectileTexturesID);
         this.players = players;
         this.name = name;
         defaultSpeed = (float)(0.5*defaultSpeed);
         secsPerShoot = 0.5;
+        keepRunning = true;
     }
 
     private Player getNearestPlayer(){
@@ -39,6 +41,18 @@ public class NPC extends PlayeableEntity implements Runnable{
     }
 
     private void moveToPlayer(Player player){
+        // Esto es otro método para hacer el pathfinding pero vamos, me quedo con el A* que este es muy básico
+        // double angleToPlayer = Math.atan2(y - player.y, player.x - x);
+        // if (angleToPlayer >= -Math.PI/4 && angleToPlayer <= Math.PI/4){
+        //     this.move(0, 1);
+        // } else if(angleToPlayer > Math.PI/4 && angleToPlayer <= 3*Math.PI/4){
+        //     this.move(1, 0);
+        // } else if(angleToPlayer > 3*Math.PI/4 || angleToPlayer < -3*Math.PI/4){
+        //     this.move(0, -1);
+        // } else{
+        //     this.move(-1, 0);
+        // }
+
         List<Tile> path = findPathToPlayer(player);
         if (path != null && path.size() > 1) {
             Tile nextTile = path.get(1);
@@ -60,7 +74,7 @@ public class NPC extends PlayeableEntity implements Runnable{
 
     @Override
     public void run(){
-        while(this.health > 0){
+        while(this.health > 0 && keepRunning){
             Player nearestPlayer = getNearestPlayer();
             moveToPlayer(nearestPlayer);
             tryShoot();
@@ -68,6 +82,10 @@ public class NPC extends PlayeableEntity implements Runnable{
                 Thread.sleep(1000/GamePanel.FPS);
             } catch(InterruptedException e){}
         }
+    }
+
+    public void stop(){
+        keepRunning = false;
     }
 
     private void tryShoot(){

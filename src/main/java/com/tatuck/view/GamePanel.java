@@ -91,7 +91,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         } else{
             this.map = new Map();
         }
-                int player1TileX = r.nextInt(map.getWidth());
+
+        if(player2 instanceof NPC){
+            ((NPC)player2).stop();
+        }
+
+        int player1TileX = r.nextInt(map.getWidth());
         int player1TileY = r.nextInt(map.getHeight());
         int player2TileX = r.nextInt(map.getWidth());
         int player2TileY = r.nextInt(map.getHeight());
