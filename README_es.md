@@ -1,4 +1,4 @@
-# Un juego para la asignatura de la universidad.
+# Un juego para una asignatura de la universidad.
 El juego consiste en una batalla entre un dueño de un kebab y un dueño de un bar. Está inspirado en el famoso barrio madrileño malasaña.
 
 La generación de los mapas funciona de la siguiente manera: la mitad de las veces sale un mapa aleatorio y la otra mitad sale un mapa definido previamente en el archivo map2.txt.
