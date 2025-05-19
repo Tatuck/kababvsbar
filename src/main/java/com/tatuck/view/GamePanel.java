@@ -222,8 +222,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener{
         for (Projectile projectile : projectiles){
             projectile.move();
             projectile.checkDeath();
-            if(projectile.checkCollision(player1)) player1.takeDamage(projectile.getDamage());
-            if(projectile.checkCollision(player2)) player2.takeDamage(projectile.getDamage());
+            if(projectile.checkCollision(player1) && getWinner() == null) player1.takeDamage(projectile.getDamage());
+            if(projectile.checkCollision(player2) && getWinner() == null) player2.takeDamage(projectile.getDamage());
         }
     }
 
